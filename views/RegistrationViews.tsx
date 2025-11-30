@@ -12,7 +12,7 @@ interface RegProps {
 // ----------------------------------------------------------------------
 export const RegisterLocal: React.FC<RegProps> = ({ setView, onSuccess }) => {
   const [step, setStep] = useState(1);
-  const [status, setStatus] = useState<'studying' | 'graduated'>('graduated'); // Default to graduated based on image
+  const [status, setStatus] = useState<'studying' | 'graduated'>('graduated');
 
   // Generate Thai years for the dropdown (Current year + 1 down to 30 years back)
   const currentThaiYear = new Date().getFullYear() + 543;

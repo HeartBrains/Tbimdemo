@@ -145,13 +145,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ setView }) => {
             )}
 
             <div className="mt-6 space-y-3">
-              <button 
-                disabled={!idReady}
-                className={`w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${idReady ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-300 cursor-not-allowed'} focus:outline-none`}
-              >
-                <span className="material-symbols-outlined text-sm mr-2">download</span>
-                ดาวน์โหลดบัตรสมาชิก
-              </button>
                <button 
                  onClick={() => setView(ViewState.EDIT_PROFILE)}
                  className="w-full flex items-center justify-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
