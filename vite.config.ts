@@ -6,8 +6,20 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       server: {
-        port: 3000,
+        port: 5173,
         host: '0.0.0.0',
+        strictPort: true,
+        allowedHosts: [
+          '.gitpod.dev',
+          '.gitpod.io',
+        ],
+        hmr: {
+          protocol: 'wss',
+          host: process.env.GITPOD_WORKSPACE_URL?.replace('https://', '').replace(/\/$/, '') 
+            ? `5173-${process.env.GITPOD_WORKSPACE_URL.replace('https://', '').replace(/\/$/, '')}`
+            : 'localhost',
+          clientPort: 443,
+        },
       },
       plugins: [react()],
       define: {
