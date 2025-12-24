@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Layout } from './components/Layout';
 import { Landing } from './views/Landing';
 import { RegisterLocal, RegisterForeign, RegisterCorporate } from './views/RegistrationViews';
-import { Login, Success } from './views/AuthViews';
+import { Login, Success, ResetPassword } from './views/AuthViews';
 import { Dashboard } from './views/Dashboard';
 import { EditProfile } from './views/ProfileViews';
 import { ViewState } from './types';
@@ -30,6 +30,8 @@ function App() {
         return <RegisterCorporate setView={setCurrentView} onSuccess={handleRegistrationSuccess} />;
       case ViewState.LOGIN:
         return <Login setView={setCurrentView} />;
+      case ViewState.RESET_PASSWORD:
+        return <ResetPassword setView={setCurrentView} />;
       case ViewState.SUCCESS:
         return <Success setView={setCurrentView} />;
       case ViewState.DASHBOARD:

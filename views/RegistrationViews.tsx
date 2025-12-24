@@ -7,16 +7,61 @@ interface RegProps {
   onSuccess: (data: any) => void;
 }
 
+const PDPASection = () => (
+  <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+    <div className="flex items-start gap-3">
+      <div className="flex items-center h-5 mt-1">
+        <input
+          id="pdpa"
+          name="pdpa"
+          type="checkbox"
+          required
+          className="h-5 w-5 text-primary-600 border-slate-300 rounded focus:ring-primary-500 cursor-pointer"
+        />
+      </div>
+      <div className="text-sm">
+        <label htmlFor="pdpa" className="font-bold text-slate-800 cursor-pointer">
+          ความยินยอมให้ใช้ข้อมูลตาม PDPA (PDPA Consent) <span className="text-red-500">*</span>
+        </label>
+        <p className="text-slate-500 leading-relaxed mt-1">
+          ข้าพเจ้ายินยอมให้สมาคมฯ เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลที่ระบุไว้ในแบบฟอร์มนี้ เพื่อวัตถุประสงค์ในการบริหารจัดการสมาชิก และการแจ้งข่าวสารกิจกรรมของสมาคมฯ
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const SecurityQuestionsSection = () => (
+  <div className="mt-8 pt-8 border-t border-slate-200">
+    <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+      <span className="material-symbols-outlined text-blue-600">security</span>
+      คำถามความปลอดภัย (Security Questions)
+    </h3>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="sm:col-span-2">
+        <label className="block text-sm font-medium text-slate-700 mb-1">เลือกคำถามความปลอดภัย <span className="text-red-500">*</span></label>
+        <select required className="block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-slate-50 outline-none transition-all">
+          <option value="">-- กรุณาเลือก 1 คำถาม --</option>
+          <option value="province">จังหวัดที่เกิด (Birth Province)</option>
+          <option value="school">โรงเรียนมัธยม (High School Name)</option>
+          <option value="mother">ชื่อเล่นของมารดา (Mother's Nickname)</option>
+          <option value="pet">ชื่อสัตว์เลี้ยงตัวแรก (First Pet's Name)</option>
+        </select>
+      </div>
+      <div className="sm:col-span-2">
+        <label className="block text-sm font-medium text-slate-700 mb-1">คำตอบ <span className="text-red-500">*</span></label>
+        <input type="text" required className="block w-full rounded-xl border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border bg-slate-50 outline-none transition-all" placeholder="ระบุคำตอบของคุณ" />
+      </div>
+    </div>
+  </div>
+);
+
 // ----------------------------------------------------------------------
 // Local (Thai) Registration
 // ----------------------------------------------------------------------
 export const RegisterLocal: React.FC<RegProps> = ({ setView, onSuccess }) => {
   const [step, setStep] = useState(1);
-  const [status, setStatus] = useState<'studying' | 'graduated'>('graduated');
-
-  // Generate Thai years for the dropdown (Current year + 1 down to 30 years back)
-  const currentThaiYear = new Date().getFullYear() + 543;
-  const years = Array.from({ length: 30 }, (_, i) => currentThaiYear + 1 - i);
+  const [subType, setSubType] = useState<'professional' | 'student'>('professional');
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,286 +71,212 @@ export const RegisterLocal: React.FC<RegProps> = ({ setView, onSuccess }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSuccess({ type: 'Local', status });
+    onSuccess({ type: 'Local', subType });
   };
 
-  const Stepper = () => (
-    <div className="max-w-4xl mx-auto mb-8">
-      <div className="flex items-center justify-center w-full">
-        {/* Step 1 */}
-        <div className={`relative flex-1 flex items-center justify-center py-2 px-1 text-sm font-medium clip-step ${step >= 1 ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-500'} z-30`}>
-          <div className="flex items-center gap-2">
-            {step > 1 ? (
-              <span className="material-symbols-outlined text-lg">check_circle</span>
-            ) : (
-              <span className="material-symbols-outlined text-lg">circle</span>
-            )}
-            <span className="hidden sm:inline">ขั้นตอนที่ 1: ข้อมูลส่วนตัว</span>
-          </div>
-        </div>
-        
-        {/* Step 2 */}
-        <div className={`relative flex-1 flex items-center justify-center py-2 px-1 text-sm font-medium clip-step -ml-4 pl-6 ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'} z-20`}>
-           <div className="flex items-center gap-2">
-             <span className="material-symbols-outlined text-lg">{step === 2 ? 'radio_button_checked' : 'circle'}</span>
-             <span className="hidden sm:inline">ขั้นตอนที่ 2: ข้อมูลการศึกษาและอาชีพ</span>
-           </div>
-        </div>
-
-        {/* Step 3 */}
-        <div className={`relative flex-1 flex items-center justify-center py-2 px-1 text-sm font-medium clip-step -ml-4 pl-6 ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-400'} z-10`}>
-           <span className="hidden sm:inline">ขั้นตอนที่ 3: ยืนยัน</span>
-        </div>
-      </div>
-      <style>{`
-        .clip-step {
-          clip-path: polygon(0% 0%, calc(100% - 15px) 0%, 100% 50%, calc(100% - 15px) 100%, 0% 100%);
-        }
-        .clip-step:first-child {
-          clip-path: polygon(0% 0%, calc(100% - 15px) 0%, 100% 50%, calc(100% - 15px) 100%, 0% 100%, 0% 50%);
-          border-top-left-radius: 0.5rem;
-          border-bottom-left-radius: 0.5rem;
-        }
-        .clip-step:last-child {
-          clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 15px 50%);
-          border-top-right-radius: 0.5rem;
-          border-bottom-right-radius: 0.5rem;
-        }
-      `}</style>
-    </div>
-  );
-
   return (
-    <div className="w-full bg-slate-50 min-h-screen pb-12">
-      <div className="bg-teal-600 h-2 w-full fixed top-0 left-0 z-50 hidden"></div>
-      
+    <div className="w-full bg-slate-50 min-h-screen pb-20">
       <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         
-        {/* Stepper */}
-        <Stepper />
+        <div className="flex items-center justify-center mb-10">
+          <div className="flex items-center w-full max-w-xs">
+            <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold transition-all ${step >= 1 ? 'bg-primary-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500'}`}>1</div>
+            <div className={`flex-grow h-1 mx-2 rounded transition-all ${step >= 2 ? 'bg-primary-600' : 'bg-slate-200'}`}></div>
+            <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold transition-all ${step >= 2 ? 'bg-primary-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500'}`}>2</div>
+          </div>
+        </div>
 
-        {/* Header Section */}
-        <div className="text-center mb-8">
-           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2">สมัครสมาชิกบุคคลทั่วไป –</h1>
-           <h2 className="text-2xl md:text-3xl font-bold text-slate-800">
-             {step === 1 ? 'ข้อมูลส่วนตัว' : 'ข้อมูลการศึกษาและอาชีพ'}
-           </h2>
+        <div className="text-center mb-10">
+           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">ลงทะเบียนบุคคลทั่วไป (ไทย)</h1>
+           <p className="text-slate-500 font-medium">
+             {step === 1 ? 'ส่วนที่ 1: ข้อมูลบุคคล (Personal Info)' : 'ส่วนที่ 2: ข้อมูลการทำงาน/การศึกษา'}
+           </p>
         </div>
         
-        <div className="bg-white p-8 sm:p-10 rounded-xl shadow-lg border border-slate-200">
-          
-          {/* STEP 1: Personal Information */}
+        <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-100 transition-all duration-500">
           {step === 1 && (
-            <form onSubmit={handleNext} className="space-y-8">
-              <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+            <form onSubmit={handleNext} className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อ-นามสกุล <span className="text-red-500">*</span></label>
-                  <input type="text" required className="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 border bg-slate-50" placeholder="" />
+                  <input type="text" required placeholder="เช่น สมชาย รักเรียน" className="block w-full rounded-xl border-slate-200 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 p-3 border bg-slate-50 outline-none" />
                 </div>
-
-                <div className="sm:col-span-2">
-                   <label className="block text-sm font-medium text-slate-700 mb-1">วันเดือนปีเกิด <span className="text-red-500">*</span></label>
-                   <div className="relative">
-                     <input type="date" placeholder="วันเดือนปีเกิด" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 border bg-slate-50" />
-                   </div>
-                </div>
-                
-                <div className="sm:col-span-2">
-                   <label className="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ <span className="text-red-500">*</span></label>
-                   <input type="tel" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 border bg-slate-50" />
-                </div>
-
                 <div>
-                   <label className="block text-sm font-medium text-slate-700 mb-1">เพศ <span className="text-red-500">*</span></label>
-                   <div className="flex space-x-6 mt-2">
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="gender" className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" defaultChecked />
-                        <span className="text-slate-900 text-sm">ชาย</span>
-                      </label>
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="gender" className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" />
-                        <span className="text-slate-900 text-sm">หญิง</span>
-                      </label>
-                   </div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">เลขบัตรประจำตัวประชาชน <span className="text-red-500">*</span></label>
+                  <input type="text" required maxLength={13} placeholder="13 หลัก" className="block w-full rounded-xl border-slate-200 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 p-3 border bg-slate-50 outline-none" />
                 </div>
-                
-                <div className="sm:col-span-2">
-                   <label className="block text-sm font-medium text-slate-700 mb-1">เลขบัตรประชาชน <span className="text-red-500">*</span></label>
-                   <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 border bg-slate-50" />
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">สัญชาติ <span className="text-red-500">*</span></label>
+                  <input type="text" defaultValue="ไทย" readOnly className="block w-full rounded-xl border-slate-200 shadow-sm p-3 border bg-slate-100 text-slate-500 outline-none" />
                 </div>
-
-                <div className="sm:col-span-2">
-                   <label className="block text-sm font-medium text-slate-700 mb-1">สัญชาติ <span className="text-red-500">*</span></label>
-                   <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 border bg-slate-50">
-                     <option>ไทย</option>
-                     <option>อื่นๆ</option>
-                   </select>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">วันเดือนปีเกิด <span className="text-red-500">*</span></label>
+                  <input type="date" required className="block w-full rounded-xl border-slate-200 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 p-3 border bg-slate-50 outline-none" />
                 </div>
-
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">เพศ <span className="text-red-500">*</span></label>
+                  <div className="flex items-center gap-6 mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="gender" value="male" className="h-4 w-4 text-primary-600 focus:ring-primary-500" /> <span className="text-slate-700">ชาย</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="gender" value="female" className="h-4 w-4 text-primary-600 focus:ring-primary-500" /> <span className="text-slate-700">หญิง</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" name="gender" value="other" className="h-4 w-4 text-primary-600 focus:ring-primary-500" /> <span className="text-slate-700">อื่นๆ</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ <span className="text-red-500">*</span></label>
+                  <input type="tel" required placeholder="08x-xxxxxxx" className="block w-full rounded-xl border-slate-200 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 p-3 border bg-slate-50 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">อีเมลติดต่อ <span className="text-red-500">*</span></label>
+                  <input type="email" required placeholder="example@mail.com" className="block w-full rounded-xl border-slate-200 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 p-3 border bg-slate-50 outline-none" />
+                </div>
                 <div className="sm:col-span-2">
-                   <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ติดต่อ <span className="text-red-500">*</span></label>
-                   <textarea rows={3} className="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 border bg-slate-50"></textarea>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ติดต่อ (Address) <span className="text-red-500">*</span></label>
+                  <textarea rows={3} required placeholder="เลขที่, หมู่, ถนน, ตำบล/แขวง, อำเภอ/เขต, จังหวัด, รหัสไปรษณีย์" className="block w-full rounded-xl border-slate-200 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 p-3 border bg-slate-50 outline-none"></textarea>
                 </div>
               </div>
-                
-              <div className="flex justify-end space-x-4 pt-6">
-                 <button type="button" onClick={() => setView(ViewState.LANDING)} className="px-6 py-2.5 border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50">
-                   ยกเลิก
-                 </button>
-                 <button type="submit" className="px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                   ถัดไป
+              <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+                 <button type="button" onClick={() => setView(ViewState.LANDING)} className="px-8 py-3 text-slate-500 font-bold hover:text-slate-800 transition-colors">ยกเลิก</button>
+                 <button type="submit" className="px-10 py-3 bg-primary-600 text-white font-bold rounded-xl shadow-lg hover:bg-primary-700 transition-all flex items-center gap-2">
+                   ขั้นตอนถัดไป
+                   <span className="material-symbols-outlined">arrow_forward</span>
                  </button>
               </div>
             </form>
           )}
 
-          {/* STEP 2: Education & Career */}
           {step === 2 && (
-            <form onSubmit={handleSubmit} className="space-y-8">
-              
-              {/* Status Selector */}
+            <form onSubmit={handleSubmit} className="space-y-10 animate-fade-in">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-3">จบการศึกษาตามเกณฑ์แล้วหรือไม่?</label>
-                <div className="flex items-center space-x-6">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name="status" 
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                      checked={status === 'graduated'}
-                      onChange={() => setStatus('graduated')}
-                    />
-                    <span className="text-slate-900 text-sm">จบการศึกษาแล้ว</span>
-                  </label>
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input 
-                      type="radio" 
-                      name="status" 
-                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                      checked={status === 'studying'}
-                      onChange={() => setStatus('studying')}
-                    />
-                    <span className="text-slate-900 text-sm">ยังไม่จบการศึกษา</span>
-                  </label>
+                <label className="block text-lg font-bold text-slate-900 mb-4">สถานะการศึกษา</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div 
+                    onClick={() => setSubType('professional')}
+                    className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex flex-col items-center text-center gap-2 ${subType === 'professional' ? 'border-primary-600 bg-primary-50 ring-1 ring-primary-600' : 'border-slate-100 hover:border-slate-200'}`}
+                  >
+                    <span className={`material-symbols-outlined text-4xl ${subType === 'professional' ? 'text-primary-600' : 'text-slate-400'}`}>work</span>
+                    <span className="font-bold text-slate-900">จบการศึกษาแล้ว</span>
+                    <p className="text-xs text-slate-500">(ข้อมูลการทำงาน)</p>
+                  </div>
+                  <div 
+                    onClick={() => setSubType('student')}
+                    className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex flex-col items-center text-center gap-2 ${subType === 'student' ? 'border-primary-600 bg-primary-50 ring-1 ring-primary-600' : 'border-slate-100 hover:border-slate-200'}`}
+                  >
+                    <span className={`material-symbols-outlined text-4xl ${subType === 'student' ? 'text-primary-600' : 'text-slate-400'}`}>school</span>
+                    <span className="font-bold text-slate-900">กำลังศึกษาอยู่</span>
+                    <p className="text-xs text-slate-500">(ข้อมูลการศึกษา)</p>
+                  </div>
                 </div>
               </div>
 
-              <hr className="border-slate-200" />
-
-              {/* Education Information */}
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 mb-6">ข้อมูลการศึกษา</h3>
-                <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">วุฒิการศึกษา</label>
-                    <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50">
-                      <option>ปริญญาตรี</option>
-                      <option>ปริญญาโท</option>
-                      <option>ปริญญาเอก</option>
-                    </select>
+              {subType === 'professional' ? (
+                <div className="space-y-6">
+                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary-600">business</span>
+                    ข้อมูลการทำงาน (Work Info)
+                  </h3>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อสถานที่ทำงาน <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ตำแหน่งงาน <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ลักษณะงาน <span className="text-red-500">*</span></label>
+                      <select required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white">
+                        <option value="">-- โปรดเลือก --</option>
+                        <option>ออกแบบ (Design)</option>
+                        <option>ก่อสร้าง (Construction)</option>
+                        <option>บริหารโครงการ (PM)</option>
+                        <option>บริหารอาคาร (FM)</option>
+                        <option>อื่นๆ</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ติดต่อ (Work Address)</label>
+                      <textarea rows={2} className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white"></textarea>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">สาขา</label>
-                    <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" defaultValue="วิศวกรรมโยธา" />
-                  </div>
-                  
-                  <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">สถานบันการศึกษา</label>
-                    <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" defaultValue="มหาวิทยาลัยเทคโนโลยีสุรนารี" />
-                  </div>
-
-                  {status === 'graduated' ? (
-                     <div className="grid grid-cols-2 gap-4 sm:col-span-2">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">ปีที่เข้าศึกษา</label>
-                          <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50">
-                            {years.map(year => (
-                              <option key={year} value={year}>{year}</option>
-                            ))}
-                          </select>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary-600">history_edu</span>
+                    ข้อมูลการศึกษา (Education Info)
+                  </h3>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">วุฒิการศึกษา <span className="text-red-500">*</span></label>
+                      <input type="text" required placeholder="ป.ตรี / ป.โท" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">คณะ <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">สาขาวิชา <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ปีที่เข้าศึกษา <span className="text-red-500">*</span></label>
+                      <input type="text" required placeholder="เช่น 2567" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">สถาบันการศึกษา <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">รหัสนักศึกษา <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">บัตรนักศึกษา (แนบไฟล์) <span className="text-red-500">*</span></label>
+                      <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-200 border-dashed rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
+                        <div className="space-y-1 text-center">
+                          <span className="material-symbols-outlined text-slate-400 text-4xl mb-2">badge</span>
+                          <div className="flex text-sm text-slate-600">
+                            <span className="font-bold text-primary-600">คลิกเพื่ออัปโหลดบัตรนักศึกษา</span>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">ปีที่จบการศึกษา</label>
-                          <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50">
-                             {years.map(year => (
-                              <option key={year} value={year}>{year}</option>
-                            ))}
-                          </select>
-                        </div>
-                     </div>
-                  ) : (
-                     <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">ปีที่เข้าศึกษา</label>
-                        <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50">
-                          {years.map(year => (
-                            <option key={year} value={year}>{year}</option>
-                          ))}
-                        </select>
-                     </div>
-                  )}
-
-                  <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">อัปโหลดเอกสารรับรองการศึกษา</label>
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md bg-slate-50">
-                      <div className="space-y-1 text-center">
-                        <span className="material-symbols-outlined text-gray-400 text-4xl">upload_file</span>
-                        <div className="flex text-sm text-gray-600 justify-center">
-                          <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                            <span>อัปโหลดเอกสาร/ไฟล์</span>
-                            <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+                        <input type="file" required className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Work Information */}
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 mb-6">ข้อมูลการทำงาน</h3>
-                <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+              <div className="space-y-6 pt-8 border-t border-slate-100">
+                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary-600">account_circle</span>
+                  ข้อมูลบัญชีผู้ใช้
+                </h3>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">สถานที่ทำงาน</label>
-                    <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" defaultValue="บริษัท บีไอเอ็ม คอนซัลติ้ง จำกัด" />
+                    <label className="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน <span className="text-red-500">*</span></label>
+                    <input type="password" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">ลักษณะงาน</label>
-                    <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" defaultValue="วิศวกรโครงสร้าง" />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ที่ทำงาน</label>
-                    <textarea rows={3} className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" defaultValue="123 อาคารบีไอเอ็ม ชั้น 5 ถนนสาทร แขวงสีลม เขตบางรัก กรุงเทพฯ 10500"></textarea>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">ยืนยันรหัสผ่าน <span className="text-red-500">*</span></label>
+                    <input type="password" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                   </div>
                 </div>
               </div>
 
-              {/* Account Information (New) */}
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 mb-6">ข้อมูลบัญชีผู้ใช้</h3>
-                <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อผู้ใช้</label>
-                    <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน</label>
-                    <input type="password" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">ยืนยันรหัสผ่าน</label>
-                    <input type="password" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-slate-50" />
-                  </div>
-                </div>
-              </div>
-                
-              <div className="flex justify-end space-x-4 pt-6">
-                 <button type="button" onClick={() => { setStep(1); window.scrollTo(0, 0); }} className="px-6 py-2.5 border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50">
-                   ย้อนกลับ
-                 </button>
-                 <button type="submit" className="px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                   ถัดไป
+              <SecurityQuestionsSection />
+              <PDPASection />
+
+              <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+                 <button type="button" onClick={() => setStep(1)} className="px-8 py-3 text-slate-500 font-bold hover:text-slate-800 transition-colors">ย้อนกลับ</button>
+                 <button type="submit" className="px-10 py-3 bg-primary-600 text-white font-bold rounded-xl shadow-lg hover:bg-primary-700 transition-all">
+                   ยืนยันการลงทะเบียน
                  </button>
               </div>
             </form>
@@ -316,6 +287,7 @@ export const RegisterLocal: React.FC<RegProps> = ({ setView, onSuccess }) => {
   );
 };
 
+// ... Rest of the file (RegisterForeign, RegisterCorporate) remains the same ...
 // ----------------------------------------------------------------------
 // Foreign Registration
 // ----------------------------------------------------------------------
@@ -326,193 +298,111 @@ export const RegisterForeign: React.FC<RegProps> = ({ setView, onSuccess }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-       {/* Header Section */}
-       <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-3">Foreigner Member Registration</h1>
-          <p className="text-slate-600">Step 2 of 3: Personal Information</p>
-       </div>
-
-       {/* Progress Bar */}
-       <div className="w-full bg-slate-200 rounded-full h-2 mb-10">
-          <div className="bg-blue-500 h-2 rounded-full" style={{ width: '66.66%' }}></div>
-       </div>
-
-       <div className="bg-white p-8 sm:p-10 rounded-lg shadow-lg border border-slate-200">
-          <form onSubmit={handleSubmit}>
-             <div className="space-y-8">
-                {/* Personal Details */}
-                <div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-6">Personal Details</h2>
-                   <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Full Name (as in passport)</label>
-                         <input type="text" placeholder="Full Name" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      {/* Date of Birth */}
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
-                         <div className="relative">
-                            <input type="date" placeholder="mm/dd/yyyy" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                         </div>
-                      </div>
-                      {/* Gender */}
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
-                         <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border">
-                            <option>Select Gender</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                            <option>Other</option>
-                         </select>
-                      </div>
-                      {/* Passport ID */}
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Passport ID</label>
-                         <input type="text" placeholder="e.g. A12345678" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      {/* Nationality */}
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Nationality</label>
-                         <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border">
-                            <option>Select Nationality</option>
-                            <option>American</option>
-                            <option>British</option>
-                            <option>Canadian</option>
-                            <option>Australian</option>
-                            <option>German</option>
-                            <option>French</option>
-                            <option>Japanese</option>
-                            <option>Singaporean</option>
-                         </select>
-                      </div>
-                      {/* Email */}
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                         <input type="email" placeholder="you@example.com" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      {/* Phone */}
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-                         <div className="flex">
-                            <select className="rounded-l-md border-r-0 border-slate-300 bg-slate-50 text-slate-500 sm:text-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500">
-                               <option>+1</option>
-                               <option>+44</option>
-                               <option>+66</option>
-                               <option>+61</option>
-                               <option>+81</option>
-                            </select>
-                            <input type="tel" placeholder="(555) 123-4567" className="block w-full rounded-r-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                         </div>
-                      </div>
+    <div className="w-full bg-slate-50 min-h-screen pb-20">
+      <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">Foreign Member Registration</h1>
+          <p className="text-slate-500 font-medium italic">Please provide your personal and professional information</p>
+        </div>
+        
+        <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-100">
+          <form onSubmit={handleSubmit} className="space-y-10">
+             <div className="space-y-6">
+                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-600">person</span>
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Full Name (as in Passport) <span className="text-red-500">*</span></label>
+                      <input type="text" required placeholder="Johnathan Doe" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                    </div>
-                </div>
-
-                {/* Contact Address */}
-                <div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-6">Contact Address</h2>
-                   <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Street Address</label>
-                         <textarea rows={3} placeholder="123 Main Street" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border"></textarea>
-                      </div>
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">City</label>
-                         <input type="text" placeholder="City" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">State / Province</label>
-                         <input type="text" placeholder="State / Province" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Postal Code</label>
-                         <input type="text" placeholder="Postal Code" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Country</label>
-                         <select className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border">
-                            <option>Select Country</option>
-                            <option>United States</option>
-                            <option>Thailand</option>
-                            <option>United Kingdom</option>
-                            <option>Australia</option>
-                            <option>Germany</option>
-                            <option>France</option>
-                         </select>
-                      </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Passport Number / ID <span className="text-red-500">*</span></label>
+                      <input type="text" required placeholder="A12345678" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                    </div>
-                </div>
-
-                {/* Employment Info */}
-                <div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-6">Employment Information</h2>
-                   <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
-                         <input type="text" placeholder="Company Name" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Job Title</label>
-                         <input type="text" placeholder="e.g. Software Engineer" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Company Address</label>
-                         <textarea rows={3} placeholder="Company's Full Address" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border"></textarea>
-                      </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Nationality <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                    </div>
-                </div>
-
-                {/* Account Info */}
-                <div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-6">Account Information</h2>
-                   <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
-                         <input type="text" placeholder="Username" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                         <input type="password" placeholder="Password" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
-                         <input type="password" placeholder="Confirm Password" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
-                      </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth <span className="text-red-500">*</span></label>
+                      <input type="date" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                    </div>
-                </div>
-
-                {/* Checkboxes */}
-                <div className="space-y-4">
-                   <div className="flex items-start">
-                      <div className="flex h-5 items-center">
-                         <input id="terms" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                      </div>
-                      <div className="ml-3 text-sm">
-                         <label htmlFor="terms" className="text-slate-600">I agree to the <a href="#" className="font-medium text-blue-600 hover:underline">Terms of Service</a></label>
-                      </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Gender <span className="text-red-500">*</span></label>
+                      <select required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white">
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                      </select>
                    </div>
-                   <div className="flex items-start">
-                      <div className="flex h-5 items-center">
-                         <input id="newsletter" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                      </div>
-                      <div className="ml-3 text-sm">
-                         <label htmlFor="newsletter" className="text-slate-600">Subscribe to newsletter</label>
-                      </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number <span className="text-red-500">*</span></label>
+                      <input type="tel" required placeholder="+xxx xxxxxxxx" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Email Address <span className="text-red-500">*</span></label>
+                      <input type="email" required placeholder="john@example.com" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Residential Address <span className="text-red-500">*</span></label>
+                      <textarea rows={2} required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white"></textarea>
                    </div>
                 </div>
              </div>
 
-             {/* Footer Buttons */}
-             <div className="mt-10 pt-8 border-t border-slate-200 flex justify-between items-center">
-                <button type="button" onClick={() => setView(ViewState.LANDING)} className="px-6 py-2.5 rounded-md text-sm font-semibold bg-slate-200 text-slate-900 hover:bg-slate-300">
-                   Back
-                </button>
-                <button type="submit" className="px-6 py-2.5 rounded-md text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
-                   Submit Application
+             <div className="space-y-6 pt-8 border-t border-slate-100">
+                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-emerald-600">work</span>
+                  Work Information
+                </h3>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Workplace Name <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Job Position <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Nature of Work <span className="text-red-500">*</span></label>
+                      <input type="text" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Work Address</label>
+                      <textarea rows={2} className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white"></textarea>
+                   </div>
+                </div>
+             </div>
+
+             <div className="space-y-6 pt-8 border-t border-slate-100">
+                <h3 className="text-xl font-bold text-slate-800">Account Credentials</h3>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Password <span className="text-red-500">*</span></label>
+                       <input type="password" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password <span className="text-red-500">*</span></label>
+                       <input type="password" required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                </div>
+             </div>
+
+             <SecurityQuestionsSection />
+             <PDPASection />
+
+             <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+                <button type="button" onClick={() => setView(ViewState.LANDING)} className="px-8 py-3 text-slate-500 font-bold hover:text-slate-800">Cancel</button>
+                <button type="submit" className="px-10 py-4 bg-emerald-600 text-white font-bold rounded-xl shadow-lg hover:bg-emerald-700 transition-all">
+                  Register Now
                 </button>
              </div>
           </form>
-       </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -527,94 +417,108 @@ export const RegisterCorporate: React.FC<RegProps> = ({ setView, onSuccess }) =>
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-       {/* Header Section */}
-       <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">ลงทะเบียนสมาชิกนิติบุคคล</h1>
-          <p className="text-slate-600">กรุณากรอกข้อมูลด้านล่างให้ครบถ้วนเพื่อสมัครสมาชิก</p>
-       </div>
-
-       <div className="bg-white p-8 sm:p-10 rounded-lg shadow-lg border border-slate-200">
-          <form onSubmit={handleSubmit}>
-             <div className="space-y-10">
-                
-                {/* Corporate Information Section */}
-                <div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-6 border-b pb-4">ข้อมูลนิติบุคคล</h2>
-                   <div className="grid grid-cols-1 gap-y-6">
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">เลขทะเบียนนิติบุคคล</label>
-                         <input type="text" placeholder="เช่น 0123456789123" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                      </div>
-                      
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อบริษัท</label>
-                         <input type="text" placeholder="เช่น บริษัท ตัวอย่าง จำกัด" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                      </div>
-
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ติดต่อ</label>
-                         <textarea rows={4} placeholder="ระบุที่อยู่ติดต่อ" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border"></textarea>
-                      </div>
+    <div className="w-full bg-slate-50 min-h-screen pb-20">
+      <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">ลงทะเบียนสมาชิกนิติบุคคล (Corporate)</h1>
+          <p className="text-slate-500 font-medium italic">สำหรับองค์กร บริษัท และหน่วยงานราชการ</p>
+        </div>
+        
+        <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-100">
+          <form onSubmit={handleSubmit} className="space-y-10">
+             {/* Corporate Info (1) */}
+             <div className="space-y-6">
+                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary-600">corporate_fare</span>
+                  ข้อมูลนิติบุคคล (Corporate Info)
+                </h3>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อองค์กร / หน่วยงาน <span className="text-red-500">*</span></label>
+                      <input type="text" required placeholder="ชื่อบริษัทหรือหน่วยงาน" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                    </div>
-                </div>
-
-                {/* Contact Person Section */}
-                <div>
-                   <h2 className="text-xl font-bold text-slate-900 mb-6 border-b pb-4">ข้อมูลส่วนตัวผู้ติดต่อ</h2>
-                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อ-สกุล</label>
-                         <input type="text" placeholder="ชื่อ-สกุลของผู้ติดต่อ" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                      </div>
-                      
-                      <div>
-                         <label className="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์</label>
-                         <input type="tel" placeholder="เบอร์โทรศัพท์ที่ติดต่อได้" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                      </div>
-
-                      <div className="sm:col-span-2">
-                         <label className="block text-sm font-medium text-slate-700 mb-1">อีเมล</label>
-                         <input type="email" placeholder="อีเมลสำหรับติดต่อ" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                      </div>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">เลขทะเบียนนิติบุคคล <span className="text-red-500">*</span></label>
+                      <input type="text" required maxLength={13} placeholder="เลขประจำตัวผู้เสียภาษี 13 หลัก" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
                    </div>
-                </div>
-
-                {/* Account Information (New) */}
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 mb-6 border-b pb-4">ข้อมูลบัญชีผู้ใช้</h2>
-                  <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
-                    <div className="sm:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อผู้ใช้</label>
-                      <input type="text" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน</label>
-                      <input type="password" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">ยืนยันรหัสผ่าน</label>
-                      <input type="password" className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm p-2.5 border" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="pt-4">
-                   <button type="submit" className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                     ลงทะเบียน
-                   </button>
+                   <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ประเภทธุรกิจ <span className="text-red-500">*</span></label>
+                      <select required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white">
+                        <option value="">-- โปรดเลือก --</option>
+                        <option>รัฐวิสาหกิจ / ราชการ</option>
+                        <option>เอกชน (จำกัด / มหาชน)</option>
+                        <option>สถานศึกษา</option>
+                      </select>
+                   </div>
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ขอบเขตการดำเนินงาน <span className="text-red-500">*</span></label>
+                      <input type="text" required placeholder="ก่อสร้าง / บริหารอาคาร / ที่ปรึกษา" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">อีเมลนิติบุคคล <span className="text-red-500">*</span></label>
+                      <input type="email" required placeholder="corp@company.com" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                   </div>
+                   <div className="sm:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ติดต่อของนิติบุคคล <span className="text-red-500">*</span></label>
+                      <textarea rows={3} required className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white"></textarea>
+                   </div>
+                   <div className="sm:col-span-2">
+                     <label className="block text-sm font-medium text-slate-700 mb-1 italic">หนังสือรับรองบริษัท (แนบไฟล์ PDF) <span className="text-red-500">*</span></label>
+                     <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-200 border-dashed rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
+                        <div className="space-y-1 text-center">
+                          <span className="material-symbols-outlined text-slate-400 text-4xl mb-2">upload_file</span>
+                          <div className="flex text-sm text-slate-600">
+                            <span className="font-bold text-primary-600">คลิกเพื่ออัปโหลดไฟล์</span>
+                          </div>
+                        </div>
+                        <input type="file" required className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                     </div>
+                   </div>
                 </div>
              </div>
-             
-             {/* Login Link */}
-             <div className="mt-6 text-center">
-                <p className="text-sm text-slate-500">
-                  มีบัญชีผู้ใช้อยู่แล้ว? <button type="button" onClick={() => setView(ViewState.LOGIN)} className="font-medium text-blue-600 hover:text-blue-500">เข้าสู่ระบบ</button>
-                </p>
+
+             {/* Personal Info (2,5) */}
+             <div className="space-y-6 pt-8 border-t border-slate-100">
+               <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                 <span className="material-symbols-outlined text-primary-600">contact_mail</span>
+                 ข้อมูลผู้ประสานงานหลัก (Personal Info)
+               </h3>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                 <div>
+                   <label className="block text-sm font-medium text-slate-700 mb-1">ชื่อ-นามสกุล <span className="text-red-500">*</span></label>
+                   <input type="text" required placeholder="ชื่อผู้ติดต่อ" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-slate-700 mb-1">เลขบัตรประจำตัวประชาชน <span className="text-red-500">*</span></label>
+                   <input type="text" required maxLength={13} placeholder="กรอกเลขบัตร 13 หลัก" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ <span className="text-red-500">*</span></label>
+                   <input type="tel" required placeholder="08x-xxxxxxx" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-slate-700 mb-1">อีเมลติดต่อ <span className="text-red-500">*</span></label>
+                   <input type="email" required placeholder="contact@company.com" className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white" />
+                 </div>
+                 <div className="sm:col-span-2">
+                   <label className="block text-sm font-medium text-slate-700 mb-1">ที่อยู่ติดต่อ (ส่วนตัว/ที่ทำงาน)</label>
+                   <textarea rows={2} className="block w-full rounded-xl border-slate-200 p-3 border outline-none bg-slate-50 focus:bg-white"></textarea>
+                 </div>
+               </div>
+             </div>
+
+             <SecurityQuestionsSection />
+             <PDPASection />
+
+             <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+                <button type="button" onClick={() => setView(ViewState.LANDING)} className="px-8 py-3 text-slate-500 font-bold hover:text-slate-800">Cancel</button>
+                <button type="submit" className="px-10 py-4 bg-primary-600 text-white font-bold rounded-xl shadow-lg hover:bg-primary-700 transition-all">
+                  ยืนยันการลงทะเบียนนิติบุคคล
+                </button>
              </div>
           </form>
-       </div>
+        </div>
+      </div>
     </div>
   );
 };

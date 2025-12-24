@@ -8,6 +8,7 @@ export enum ViewState {
   DASHBOARD = 'DASHBOARD',
   SUCCESS = 'SUCCESS',
   EDIT_PROFILE = 'EDIT_PROFILE',
+  RESET_PASSWORD = 'RESET_PASSWORD',
 }
 
 export interface UserData {
